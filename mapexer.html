@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>[6123116 假屋匡成]情報技法　第6回演習</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="http://www.tufs.ac.jp/ts2/personal/InforS/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="http://www.tufs.ac.jp/ts2/personal/InforS/leaflet/leaflet-icon-pulse-master/src/L.Icon.Pulse.css" />
+    <script src="http://www.tufs.ac.jp/ts2/personal/InforS/leaflet/leaflet.js"></script>
+    <script src="http://www.tufs.ac.jp/ts2/personal/InforS/leaflet/leaflet.bouncemarker-master/bouncemarker.js"></script>
+    <script src="http://www.tufs.ac.jp/ts2/personal/InforS/leaflet/leaflet-icon-pulse-master/src/L.Icon.Pulse.js"></script>
+    <style type="text/css">
+        /* スタイルシート */
+        body { margin : 0px; padding : 0px }
+        #container { width : 870px; margin-left : auto; margin-right : auto; }
+        #banner { width : 700px; height : 50px; background-color : #ffccff; }
+        #leftbox { float : left; width : 220px; }
+        #contents { float : left; width : 650px; }
+        #minf { padding-top: 10px; padding-left: 30px; width:620px; height:30px;
+                font-size: 1.5em; color: #22aa88; background-color : #ffffcc; border:solid 1px #008000;}
+        #map_canvas { width:650px; height:600px;
+          border-left:solid 1px #008000; /* 左側罫線 一本線 1ピクセル幅 緑色 */
+          border-right:solid 1px #008000; /* 右側罫線  一本線 1ピクセル幅 緑色 */
+          border-top:none; /* 上側罫線 非表示 */
+          border-bottom: solid 1px #008000; /* 下側罫線 一本線 1ピクセル幅 緑色 */
+        }
+        .indnt { text-indent : 12pt; }
+        p {text-indent: 2em }
+        p.note {font-style: italic}
+        /* リンクメニュー */
+        .submenu1-1 {
+          border-left:solid 1px #008000; /* 左側罫線 一本線 1ピクセル幅 緑色 */
+          border-right:none; /* 右側罫線 非表示 */
+          border-top:solid 1px #008000; /* 上側罫線 一本線 1ピクセル幅 緑色 */
+          border-bottom: none; /* 下側罫線 非表示 */
+          text-align:center; /* テキストを中央寄せ */
+          background-color:#ccffcc; /* 背景色 後で薄緑色に変更 */
+          color:#008000; /* 文字色 緑色 */
+          font-weight:bold; /* 文字幅 太く */
+          padding-top:3px; /* 上側余白 3ピクセル */
+          width:220px; /* ボックス幅 150ピクセル */
+        }
+        /* 項タイトル */
+        .submenu2-1 {
+          border-left:solid 1px #008000; /* 左側罫線 一本線 1ピクセル幅 緑色 */
+          border-right:none; /* 右側罫線 非表示 */
+          border-top:solid 1px #008000; /* 上側罫線 非表示 */
+          border-bottom:solid 1px #008000; /* 下側罫線  一本線 1ピクセル幅 緑色　*/
+          background-color : #ffeedd;/* 背景色 ライトオレンジ色 */
+          width:220px; /* ボックス幅 150ピクセル */
+        }
+        .submenu2-1-1 {
+          margin:10px; /* */
+        }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="banner"><img src="mybanner.jpg" alt="バナー"></div>
+      <div id="leftbox"> 
+        <div class="submenu1-1">東京外国語大学とその周辺</div> 
+        <div class="submenu2-1">
+          <div class="submenu2-1-1">
+            <a href=" javascript: markerClicked(0)">東京外国語大学研究講義棟</a><br />
+            <a href=" javascript: markerClicked(1)">警察大学校</a><br/>
+            <a href=" javascript: markerClicked(2)">国際基督教大学</a><br/>
+            <a href=" javascript: markerClicked(3)">飛田給駅</a><br/>
+            <a href=" javascript: markerClicked(4)">假屋の実家</a><br/>
+            <a href=" javascript: markerClicked(5)">野村の住処</a><br/>
+            <a href=" javascript: markerClicked(6)">横田の実家</a><br/>
+            <a href=" javascript: markerClicked(7)">斎藤の住処</a><br/>
+          </div>
+        </div>
+      </div>
+      <div id="contents">
+        <div id="minf">周辺地図</div>
+        <div id="map_canvas"></div>
+      </div>
+    </div>
+    <script type="text/javascript">
+        var mkrPupWnds = [];    
+        var initCenter = [35.675113,139.520059]; // 地図の中心の初期値    
+        // locationsはマーカ情報を収納する入れ物        
+        var locations =    
+        [    
+           [ '東京外国語大学研究講義棟', [35.674258,139.519597] ],
+           ['警察大学校', [35.671461,139.519705]],
+           ['国際基督教大学', [35.68769, 139.52948]],
+           ['飛田給駅', [35.66027, 139.52347]],
+           ['假屋の実家', [34.45159599976242, 132.4784804634549]],
+           ['野村の住処', [34.45225910588186, 132.47877624414122]],
+           ['横田の実家', [34.44808733598149, 132.47793342253485]],
+           ['斎藤の住処', [34.45111099902625, 132.4830094223363]],
+        ]
+   
+	// contentsはポップアップウィンドウの表示内容を収納する入れ物    
+	var contents =    
+	[    
+	  ['東京外国語大学の学部，大学院の教室や研究室のある建物'],  	
+          ['警察庁附属の研修機関'],
+          ['別名　ICU'],
+          ['味の素スタジアムの最寄駅'],
+          ['レイがいるよ'],
+          ['いっつも寝てる人がいるよ'],
+          ['山口の怪物を生み出した家'],
+          ['終わった人間の寝床'],
+	]    
+      
+	function initialize() {    
+	  var mapCanvas, marker, pupWnd, size, latlng, ttl, ctt;    
+          mapCanvas = L.map('map_canvas').setView(initCenter,15);        
+          
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',    
+	              {    
+                         attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a>'        
+	              }).addTo(mapCanvas);  	
+		
+          size = locations.length; //マーカーを表示する場所の数    
+          for (var i = 0; i < size; i++) {          
+	    latlng = locations[i][1];   
+	    ttl = locations[i][0];
+	    ctt = contents[i][0];    
+	    marker = L.marker(latlng, {title: ttl, 
+            icon: L.icon.pulse({iconSize: [10,10], color: 'blue'})}).addTo(mapCanvas);    
+	    pupWnd = marker.bindPopup(ctt);    
+            // ポップアップウィンドウをポップアップウィンドウのリスト(mkrPupWnds)に追加        
+            mkrPupWnds.push(pupWnd);  	
+          }
+        }        
+	  
+        function markerClicked(markerNum) {        
+          var newInfowindow = mkrPupWnds[markerNum];    
+          newInfowindow.openPopup();      
+        }  
+        initialize(); 
+    </script>  
+  </body>
+</html>
